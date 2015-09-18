@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Conhecendo Rust</title>
+
+    <meta name="description" content="Uma linguagem segura, rápida e concorrente">
+    <meta name="author" content="Vinícius dos Santos Oliveira">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+	<section>
+	  <h1>Conhecendo Rust</h1>
+	  <h3>A linguagem segura, rápida e concorrente</h3>
+	  <p>
+	    <small><a href="https://about.me/vinipsmaker">vinipsmaker</a></small>
+	  </p>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Hello world
+
+            ```rust
+            fn main() {
+                println!("Hello world")
+            }
+            ```
+
+            <https://play.rust-lang.org/>
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Rust's trifecta
+
+            - Memory **safety** without garbage collection.
+            - **Concurrency** without data races.
+            - Abstraction **without overhead**.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            # Safety
+
+            ![](exploits.jpg)
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            <div class="stretch">
+              [![](http://imgs.xkcd.com/comics/heartbleed_explanation.png)](http://xkcd.com/1354/)
+            </div>
+
+            http://xkcd.com/1354/
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## `goto fail`
+
+            ```c
+            hashOut.data = hashes + SSL_MD5_DIGEST_LEN;
+            hashOut.length = SSL_SHA1_DIGEST_LEN;
+            if ((err = SSLFreeBuffer(&hashCtx)) != 0)
+                goto fail;
+            if ((err = ReadyHash(&SSLHashSHA1, &hashCtx)) != 0)
+                goto fail;
+            if ((err = SSLHashSHA1.update(&hashCtx, &clientRandom)) != 0)
+                goto fail;
+            if ((err = SSLHashSHA1.update(&hashCtx, &serverRandom)) != 0)
+                goto fail;
+            if ((err = SSLHashSHA1.update(&hashCtx, &signedParams)) != 0)
+                goto fail;
+                goto fail;  /* MISTAKE! THIS LINE SHOULD NOT BE HERE */
+            if ((err = SSLHashSHA1.final(&hashCtx, &hashOut)) != 0)
+                goto fail;
+
+            err = sslRawVerify(...);
+            ```
+	  </script>
+	</section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## SQL injection
+
+            ```
+            db.query("SELECT first, last FROM users "
+                     "WHERE login = '#{login}' "
+                     "AND customer = '#{customer}' "
+                     "AND department = '#{department}'")
+            ```
+
+            - <http://www.more-magic.net/posts/structurally-fixing-injection-bugs.html>
+            - <https://www.youtube.com/watch?v=jVoFws7rp88> (Fast, secure, safe: the web that can still be)
+          </script>
+        </section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ```rust
+            fn main() {
+                println!("Hello world");
+                return;
+                println!("Oops");
+            }
+            ```
+
+            ```
+            <std macros>:2:1: 2:58 warning: unreachable statement, #[warn(unreachable_code)] on by default
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ```rust
+            fn foo(n: i32) -> char {
+                let ret;
+                if n < 0 {
+                    ret = '-'
+                }
+                return ret
+            }
+
+            fn main() {
+                println!("{}", foo(42))
+            }
+            ```
+
+            ```
+            test.rs:6:12: 6:15 error: use of possibly uninitialized variable: `ret` [E0381]
+            ```
+	  </script>
+	</section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ```rust
+            fn main() {
+                let x = 0;
+                if x = 2 {
+                    println!("HEY")
+                }
+            }
+            ```
+
+            ```
+            <anon>:3:8: 3:13 error: mismatched types:
+             expected `bool`,
+                found `()`
+            ```
+          </script>
+        </section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Rust não possui...
+
+            - Null pointers.
+            - Array overruns.
+            - Data races.
+            - Wild pointers.
+            - Unions that allow access to the wrong field.
+            - Exceptions.
+            - ...
+
+            <http://graydon2.dreamwidth.org/218040.html>
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Por que C?
+
+            - Latência baixa e previsível.
+            - Baixo consumo de recursos.
+            - Performance.
+            - Apropriada para programação de sistemas.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Por que outras linguagens inseguras?
+
+            - Autores não se importam com segurança.
+              - Mas escolheram algumas ideias legais.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            # Curva de aprendizado
+
+            - Python
+            - C++
+            - Rust
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Criando uma linguagem sem legado
+
+            - Haskell: orientação a expressões, pattern matching, algebraic data
+              types, inferência de tipos.
+            - Lisp: macros higiênicas.
+            - Ruby, Go: sintaxe esperta.
+            - C++
+              - What you don’t use, you don’t pay for.
+              - What you do use, you couldn’t hand code any better.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Performance **E** segurança
+
+            Afeta curva de aprendizado.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Lifetimes, ownerships, data races
+
+            Elimina necessidade de GC.
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Declarações em C
+
+            > Expressão que você escreve resulta no tipo especificado a
+            > esquerda.
+
+            ```c
+            int *p; // *p
+            int a[3]; // a[2]
+            int (*fp)(int a, int b); // (*fp)(1, 2)
+            int (*fp)(int (*ff)(int x, int y), int b);
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Declarações em Rust
+
+            ```rust
+            let a;
+            let b: i32;
+            let c = 42;
+            let d = 42i32;
+            let e: i32 = 42;
+            let _f;
+            let mut g;
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Declarando funções
+
+            ```rust
+            fn main() {
+                let x: () = ();
+                return x;
+            }
+            ```
+
+            ```rust
+            fn id(id_arg: String, a: &mut int, _: &Foo) -> bool {
+                // ...
+            }
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Linguagem orientada a expressões
+
+            ```rust
+            let x = {
+                "abc";
+                55;
+                if y > 2 {
+                    30
+                } else {
+                    14
+                }
+            };
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Linguagem orientada a expressões
+
+            ```rust
+            let x = if y > 2 {
+                30
+            } else {
+                14
+            };
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Escondendo nomes
+
+            ```rust
+            let mut x;
+            if y > 2 {
+                x = 30
+            } else {
+                x = 14
+            };
+            let x = x;
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Incrementando um número do usuário
+
+            ```rust
+            use std::io;
+            use std::process::exit;
+
+            fn main() {
+              let reader = io::stdin();
+              let mut line = String::new();
+              if let Err(_) = reader.read_line(&mut line) {
+                println!("Falhou ao ler");
+                exit(1)
+              }
+              let line = line.trim();
+              match line.parse::<i32>() {
+                Ok(x) => println!("{}", x + 1),
+                Err(_) => {
+                  println!("{:?} não é um número", line);
+                  exit(2)
+                },
+              };
+            }
+            ```
+	  </script>
+	</section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Algebraic data types
+
+            ```rust
+            enum Option {
+                Some(i32),
+                None,
+            }
+
+            fn foo() -> Option {
+                let x = Option::Some(42);
+                x
+            }
+            ```
+	  </script>
+	</section>
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+      controls: true,
+      progress: true,
+      history: true,
+      center: true,
+
+      transition: "zoom",
+
+      // Optional reveal.js plugins
+      dependencies: [
+      { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'plugin/zoom-js/zoom.js', async: true },
+      { src: 'plugin/notes/notes.js', async: true }
+      ]
+      });
+
+    </script>
+
+  </body>
+</html>
