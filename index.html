@@ -368,6 +368,46 @@
 	  </script>
 	</section>
 
+        <section data-markdown>
+          <script type="text/template">
+            ## Pattern matching
+
+            ```rust
+            fn fibonacci(number: u32) -> u32 {
+              match number {
+                0 => 1,
+                1 => 1,
+                x => fibonacci(x - 1) + fibonacci(x - 2),
+              }
+            }
+
+            fn main() {
+              let number = 5;
+              let fib_result = fibonacci(number);
+              println!("fibonacci({}) = {}", number, fib_result);
+            }
+            ```
+          </script>
+        </section>
+
+	<section data-markdown>
+	  <script type="text/template">
+            ## Algebraic data types
+
+            ```rust
+            enum Option {
+                Some(i32),
+                None,
+            }
+
+            fn foo() -> Option {
+                let x = Option::Some(42);
+                x
+            }
+            ```
+	  </script>
+	</section>
+
 	<section data-markdown>
 	  <script type="text/template">
             ## Incrementando um número do usuário
@@ -396,23 +436,11 @@
 	  </script>
 	</section>
 
-	<section data-markdown>
-	  <script type="text/template">
-            ## Algebraic data types
-
-            ```rust
-            enum Option {
-                Some(i32),
-                None,
-            }
-
-            fn foo() -> Option {
-                let x = Option::Some(42);
-                x
-            }
-            ```
-	  </script>
-	</section>
+        <section data-markdown>
+          <script type="text/template">
+            # Perguntas?
+          </script>
+        </section>
 
         <!--
             TODO:
